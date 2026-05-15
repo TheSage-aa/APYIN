@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog — APYIN Osun</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #D0021B;
+      --red-light: #FF1A35;
+      --red-pale: #FFF0F2;
+      --green: #1A6B3A;
+      --green-light: #2A8A4D;
+      --cream: #FDFAF5;
+      --warm-white: #FFFEF9;
+      --charcoal: #1C1C1C;
+      --mid: #5A5A5A;
+      --border: #E8E0D6;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--warm-white);
+      color: var(--charcoal);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%;
+      height: 72px;
+      background: rgba(255,254,249,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow 0.3s;
+    }
+    nav.scrolled { box-shadow: 0 2px 24px rgba(0,0,0,0.08); }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo-mark {
+      width: 42px; height: 42px;
+      background: var(--red);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      flex-shrink: 0;
+    }
+    .nav-logo-mark img { width: 26px; height: 26px; object-fit: contain; }
+    .nav-logo-text { display: flex; flex-direction: column; line-height: 1; }
+    .nav-logo-text strong {
+      font-family: 'Fraunces', serif;
+      font-weight: 900; font-size: 1.35rem;
+      color: var(--red);
+      letter-spacing: -0.5px;
+    }
+    .nav-logo-text span {
+      font-size: 0.6rem; font-weight: 500;
+      color: var(--green); letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none; font-size: 0.875rem;
+      font-weight: 500; color: var(--mid);
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 2px; background: var(--red);
+      transition: width 0.25s;
+    }
+    .nav-links a:hover { color: var(--red); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      background: var(--red); color: #fff !important;
+      padding: 8px 20px; border-radius: 100px;
+      font-weight: 600 !important;
+      transition: background 0.2s, transform 0.15s !important;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: var(--red-light) !important; transform: translateY(-1px); color: #fff !important; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: 140px 8% 60px;
+      background: var(--cream);
+      border-bottom: 1px solid var(--border);
+    }
+    .page-header .section-tag {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 16px;
+    }
+    .page-header h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 900; line-height: 1.1;
+      letter-spacing: -1px; color: var(--charcoal);
+    }
+    .page-header h1 em { color: var(--red); font-style: italic; }
+    .page-header p {
+      font-size: 1.05rem; line-height: 1.75;
+      color: var(--mid); margin-top: 16px; max-width: 520px;
+    }
+
+    /* ── BLOG GRID ── */
+    .blog-page-grid {
+      padding: 64px 8%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    .blog-page-card {
+      background: #fff; border-radius: 16px; overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .blog-page-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.1); }
+    .blog-page-card.featured {
+      grid-column: span 2;
+    }
+    .blog-page-thumb {
+      height: 220px; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .blog-page-card.featured .blog-page-thumb { height: 300px; }
+    .blog-page-thumb-inner {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .blog-page-cat {
+      position: absolute; top: 16px; left: 16px;
+      background: rgba(255,255,255,0.95); border-radius: 100px;
+      padding: 4px 12px; font-size: 0.7rem;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--red);
+    }
+    .blog-page-body { padding: 28px; }
+    .blog-page-date { font-size: 0.72rem; color: var(--mid); font-weight: 500; margin-bottom: 10px; }
+    .blog-page-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.15rem; font-weight: 700;
+      line-height: 1.35; color: var(--charcoal); margin-bottom: 10px;
+    }
+    .blog-page-card.featured .blog-page-title { font-size: 1.5rem; }
+    .blog-page-excerpt { font-size: 0.85rem; color: var(--mid); line-height: 1.65; }
+    .blog-page-read { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; font-size: 0.82rem; font-weight: 600; color: var(--red); text-decoration: none; }
+    .blog-page-read:hover { gap: 10px; }
+
+    .thumb-a { background: linear-gradient(135deg, #D0021B22, #D0021B44); }
+    .thumb-b { background: linear-gradient(135deg, #1A6B3A22, #1A6B3A44); }
+    .thumb-c { background: linear-gradient(135deg, #D0021B11, #1A6B3A22); }
+    .thumb-d { background: linear-gradient(135deg, #1A6B3A11, #D0021B22); }
+    .thumb-e { background: linear-gradient(135deg, #D0021B33, #1A6B3A33); }
+    .thumb-f { background: linear-gradient(135deg, #1A6B3A33, #D0021B33); }
+    .thumb-emoji { font-size: 3.5rem; }
+
+    /* ── ARTICLE SECTION ── */
+    .article-section {
+      padding: 64px 8%;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .article-section h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.8rem; font-weight: 900;
+      color: var(--charcoal); margin-bottom: 24px;
+      line-height: 1.2;
+    }
+    .article-section p {
+      font-size: 1rem; line-height: 1.85;
+      color: var(--mid); margin-bottom: 20px;
+    }
+    .article-section blockquote {
+      border-left: 4px solid var(--red);
+      padding-left: 24px;
+      margin: 32px 0;
+      font-family: 'Fraunces', serif;
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--charcoal);
+    }
+    .article-section .article-meta {
+      display: flex; gap: 16px; align-items: center;
+      margin-bottom: 32px;
+      font-size: 0.85rem; color: var(--mid);
+    }
+    .article-section .article-meta span {
+      background: var(--red-pale); color: var(--red);
+      padding: 4px 12px; border-radius: 100px;
+      font-weight: 600; font-size: 0.72rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #111; padding: 56px 8% 36px;
+      color: rgba(255,255,255,0.5);
+    }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px;
+      padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .footer-brand .nav-logo-text strong { color: #fff; }
+    .footer-brand p { margin-top: 16px; font-size: 0.83rem; line-height: 1.7; max-width: 260px; }
+    .footer-col h4 { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.7); margin-bottom: 18px; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 12px; }
+    .footer-col a { color: rgba(255,255,255,0.45); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--red); }
+
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 28px; font-size: 0.78rem; flex-wrap: gap;
+    }
+    .footer-red { color: var(--red); }
+    .social-links { display: flex; gap: 12px; }
+    .social-link {
+      width: 36px; height: 36px; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.5); font-size: 0.85rem;
+      transition: border-color 0.2s, color 0.2s;
+      text-decoration: none;
+    }
+    .social-link:hover { border-color: var(--red); color: var(--red); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .blog-page-grid { grid-template-columns: 1fr; }
+      .blog-page-card.featured { grid-column: span 1; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 0 4%; }
+      .nav-links { display: none; }
+      .page-header { padding: 120px 5% 48px; }
+      .blog-page-grid { padding: 48px 5%; }
+      .footer-top { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-mark">
+      <img src="apyin-logo-seal.png" alt="APYIN Seal" />
+    </div>
+    <div class="nav-logo-text">
+      <strong>APYIN</strong>
+      <span>Osun State Chapter</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="index.html#get-involved">Get Involved</a></li>
+    <li><a href="index.html#contact" class="nav-cta">Contact Us</a></li>
+  </ul>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div class="section-tag">Stories & Updates</div>
+  <h1>From Our <em>Community</em></h1>
+  <p>Real stories, resources, and updates from APYIN Osun and the wider movement for youth living with HIV in Nigeria.</p>
+</div>
+
+<!-- ── BLOG GRID ── -->
+<div class="blog-page-grid">
+  <!-- Featured post -->
+  <a href="#article-1" class="blog-page-card featured" id="post-1">
+    <div class="blog-page-thumb thumb-a">
+      <div class="blog-page-thumb-inner">
+        <span class="thumb-emoji">🎗️</span>
+      </div>
+      <span class="blog-page-cat">Featured</span>
+    </div>
+    <div class="blog-page-body">
+      <div class="blog-page-date">May 10, 2026</div>
+      <div class="blog-page-title">Breaking the Silence: How Peer Mentorship is Changing Lives Across Osun State</div>
+      <div class="blog-page-excerpt">When 22-year-old Tunde disclosed his status to his mentor, he never expected to become one himself. Three years later, he leads a network of 40 young people across six communities in Osun State, proving that peer support is one of the most powerful tools in the fight against HIV stigma.</div>
+      <span class="blog-page-read">Read Full Story →</span>
+    </div>
+  </a>
+
+  <!-- Post 2 -->
+  <a href="#article-2" class="blog-page-card" id="post-2">
+    <div class="blog-page-thumb thumb-b">
+      <div class="blog-page-thumb-inner">
+        <span class="thumb-emoji">📢</span>
+      </div>
+      <span class="blog-page-cat">Advocacy</span>
+    </div>
+    <div class="blog-page-body">
+      <div class="blog-page-date">April 28, 2026</div>
+      <div class="blog-page-title">APYIN Represents at the African Girls Summit 2026 in Yamoussoukro</div>
+      <div class="blog-page-excerpt">Our youth delegates brought Nigeria's adolescent HIV story to the international stage — and left with renewed resolve to push for better policies at home.</div>
+      <span class="blog-page-read">Read More →</span>
+    </div>
+  </a>
+
+  <!-- Post 3 -->
+  <a href="#article-3" class="blog-page-card" id="post-3">
+    <div class="blog-page-thumb thumb-c">
+      <div class="blog-page-thumb-inner">
+        <span class="thumb-emoji">💡</span>
+      </div>
+      <span class="blog-page-cat">Resources</span>
+    </div>
+    <div class="blog-page-body">
+      <div class="blog-page-date">April 12, 2026</div>
+      <div class="blog-page-title">Understanding PrEP: A Guide for Young People in Nigeria</div>
+      <div class="blog-page-excerpt">Pre-exposure prophylaxis is one of the most powerful tools in HIV prevention. Here's what you need to know about accessing it in Osun State.</div>
+      <span class="blog-page-read">Read Guide →</span>
+    </div>
+  </a>
+
+  <!-- Post 4 -->
+  <a href="#article-4" class="blog-page-card" id="post-4">
+    <div class="blog-page-thumb thumb-d">
+      <div class="blog-page-thumb-inner">
+        <span class="thumb-emoji">🏥</span>
+      </div>
+      <span class="blog-page-cat">Health</span>
+    </div>
+    <div class="blog-page-body">
+      <div class="blog-page-date">March 22, 2026</div>
+      <div class="blog-page-title">Navigating ART Adherence: Tips from Our Peer Mentors</div>
+      <div class="blog-page-excerpt">Staying consistent with antiretroviral therapy can be challenging. Our mentors share practical strategies that have worked for them and their mentees.</div>
+      <span class="blog-page-read">Read More →</span>
+    </div>
+  </a>
+
+  <!-- Post 5 -->
+  <a href="#article-5" class="blog-page-card" id="post-5">
+    <div class="blog-page-thumb thumb-e">
+      <div class="blog-page-thumb-inner">
+        <span class="thumb-emoji">🌍</span>
+      </div>
+      <span class="blog-page-cat">Community</span>
+    </div>
+    <div class="blog-page-body">
+      <div class="blog-page-date">March 5, 2026</div>
+      <div class="blog-page-title">World AIDS Day 2025: Osun State Youth Lead the Charge</div>
+      <div class="blog-page-excerpt">A look back at how our members organised community dialogues, free testing drives, and awareness campaigns across the state.</div>
+      <span class="blog-page-read">Read More →</span>
+    </div>
+  </a>
+
+  <!-- Post 6 -->
+  <a href="#article-6" class="blog-page-card" id="post-6">
+    <div class="blog-page-thumb thumb-f">
+      <div class="blog-page-thumb-inner">
+        <span class="thumb-emoji">💬</span>
+      </div>
+      <span class="blog-page-cat">Voices</span>
+    </div>
+    <div class="blog-page-body">
+      <div class="blog-page-date">February 18, 2026</div>
+      <div class="blog-page-title">"I Am Not My Status": A Conversation with Three Young Women</div>
+      <div class="blog-page-excerpt">Three members of our SRHR advocacy team open up about self-acceptance, relationships, and reclaiming their narratives.</div>
+      <span class="blog-page-read">Read More →</span>
+    </div>
+  </a>
+</div>
+
+<!-- ── FULL ARTICLE: POST 1 ── -->
+<div class="article-section" id="article-1">
+  <div class="article-meta">
+    <span>Featured</span>
+    <span>May 10, 2026</span>
+    <span>8 min read</span>
+  </div>
+  <h2>Breaking the Silence: How Peer Mentorship is Changing Lives Across Osun State</h2>
+  <p>When Tunde first walked into the APYIN Osun support group meeting three years ago, he was terrified. At 22, he had just learned his HIV status and couldn't imagine a future where he would be accepted, let alone thrive.</p>
+  <p>"I thought my life was over," Tunde recalls. "I didn't know anyone else who was positive. I felt completely alone."</p>
+  <p>That changed when he met his peer mentor, Adeola — a young woman who had been living with HIV for five years and had built a career, a family, and a community of support around herself. Their first conversation lasted three hours. By the end, Tunde says he felt something he hadn't felt in months: hope.</p>
+  <blockquote>"Seeing someone who looked like me, talked like me, and was living a full life with HIV — that changed everything."</blockquote>
+  <p>Today, Tunde is one of APYIN Osun's most active peer mentors, leading a network of 40 young people across six communities. His story is not unique. Across Osun State, peer mentorship has become the backbone of APYIN's community work, creating a ripple effect of support that extends far beyond individual relationships.</p>
+  <p>"Peer mentorship works because it's built on shared experience," says the chapter coordinator. "It's not a doctor telling you what to do — it's someone who's walked the same path showing you that you can make it."</p>
+  <p>The programme pairs newly diagnosed young people with mentors who have been living with HIV for at least two years. Mentors receive training in psychosocial support, treatment literacy, and advocacy — but the most important qualification, coordinators say, is empathy.</p>
+  <p>In the past year alone, the Osun chapter has trained 25 new peer mentors and supported over 150 young people through one-on-one mentorship and group sessions. The impact is measurable: mentees show higher rates of treatment adherence, lower levels of self-stigma, and greater engagement in community activities.</p>
+  <p>"I'm not just surviving anymore," Tunde says. "I'm living. And I'm helping others do the same."</p>
+</div>
+
+<!-- ── FULL ARTICLE: POST 2 ── -->
+<div class="article-section" id="article-2">
+  <div class="article-meta">
+    <span>Advocacy</span>
+    <span>April 28, 2026</span>
+    <span>6 min read</span>
+  </div>
+  <h2>APYIN Represents at the African Girls Summit 2026 in Yamoussoukro</h2>
+  <p>From April 15–18, 2026, three youth delegates from APYIN Osun joined hundreds of young advocates from across the continent at the African Girls Summit in Yamoussoukro, Côte d'Ivoire.</p>
+  <p>The summit, themed "Amplifying Adolescent Voices for Health and Rights," brought together governments, civil society, and young people to discuss pressing issues facing adolescent girls — including HIV, SRHR, gender-based violence, and education.</p>
+  <p>Our delegates participated in panel discussions, facilitated a workshop on peer-led HIV education, and presented a policy brief calling for increased funding for youth-friendly health services in Nigeria.</p>
+  <blockquote>"Being in a room with young people from 40 countries, all fighting for the same thing — it reminded us that we're part of something much bigger than Osun State."</blockquote>
+  <p>The delegation also held bilateral meetings with representatives from UNAIDS, UNFPA, and the African Union Youth Envoy's office to discuss opportunities for partnership and funding.</p>
+  <p>"We came back with a clear mandate," says one delegate. "We need to push harder at home. The policies exist on paper, but implementation is where the gap is."</p>
+  <p>The chapter is now developing an advocacy roadmap based on insights from the summit, with a focus on engaging local government officials and traditional leaders in Osun State.</p>
+</div>
+
+<!-- ── FULL ARTICLE: POST 3 ── -->
+<div class="article-section" id="article-3">
+  <div class="article-meta">
+    <span>Resources</span>
+    <span>April 12, 2026</span>
+    <span>5 min read</span>
+  </div>
+  <h2>Understanding PrEP: A Guide for Young People in Nigeria</h2>
+  <p>Pre-exposure prophylaxis, commonly known as PrEP, is a daily medication that prevents HIV infection. When taken consistently, PrEP reduces the risk of getting HIV from sex by about 99%. It's one of the most powerful tools we have in HIV prevention — but many young people in Nigeria still don't know it exists or how to access it.</p>
+  <p><strong>What is PrEP?</strong></p>
+  <p>PrEP is a combination of two antiretroviral drugs — tenofovir and emtricitabine — taken as a single daily pill. It works by building up a protective level of medication in the body, making it much harder for HIV to establish infection if exposure occurs.</p>
+  <p><strong>Who should consider PrEP?</strong></p>
+  <p>PrEP is recommended for anyone at substantial risk of HIV, including:</p>
+  <p>• Young people with HIV-positive partners<br>• Those who have multiple sexual partners<br>• People who engage in transactional sex<br>• Anyone who has recently had a sexually transmitted infection<br>• People who inject drugs</p>
+  <p><strong>How to access PrEP in Osun State</strong></p>
+  <p>PrEP is available free of charge at many government health facilities and some private clinics in Osun State. You can access it through:</p>
+  <p>• Your local government primary health centre<br>• State hospitals with HIV/AIDS departments<br>• Partner clinics working with APYIN and NEPWHAN</p>
+  <p>Before starting PrEP, you'll need an HIV test to confirm you're negative, as well as kidney function tests. Your healthcare provider will also test for hepatitis B.</p>
+  <blockquote>"PrEP isn't just for one group of people. It's for anyone who wants to take control of their sexual health."</blockquote>
+  <p>For more information or help finding a PrEP provider near you, contact APYIN Osun or reach out to your nearest health facility.</p>
+</div>
+
+<!-- ── FULL ARTICLE: POST 4 ── -->
+<div class="article-section" id="article-4">
+  <div class="article-meta">
+    <span>Health</span>
+    <span>March 22, 2026</span>
+    <span>5 min read</span>
+  </div>
+  <h2>Navigating ART Adherence: Tips from Our Peer Mentors</h2>
+  <p>Antiretroviral therapy (ART) has transformed HIV from a death sentence into a manageable chronic condition. But the medication only works if you take it consistently — and for many young people, life gets in the way.</p>
+  <p>We asked our peer mentors to share the strategies that have helped them and their mentees stay on track with treatment. Here's what they said:</p>
+  <p><strong>1. Build a routine around your pills</strong></p>
+  <p>"I take my medication right after I brush my teeth every morning," says one mentor. "It's become as automatic as brushing itself." Linking your medication to an existing daily habit — like breakfast, your morning alarm, or bedtime — can make adherence much easier.</p>
+  <p><strong>2. Use reminders</strong></p>
+  <p>Phone alarms, medication apps, and even sticky notes can help. Some mentors recommend setting multiple alarms or asking a trusted friend to check in regularly.</p>
+  <p><strong>3. Keep a backup supply</strong></p>
+  <p>Always have at least a week's worth of medication with you. Life is unpredictable — travel, work, and emergencies can disrupt your schedule. A small pillbox in your bag can be a lifesaver.</p>
+  <p><strong>4. Address side effects early</strong></p>
+  <p>"Don't suffer in silence," advises a mentor. "If you're experiencing side effects, talk to your healthcare provider. There are often solutions — switching medications, adjusting timing, or managing symptoms."</p>
+  <p><strong>5. Find your support system</strong></p>
+  <p>Whether it's a peer mentor, a support group, or a trusted friend, having someone to talk to makes a difference. "On days when I don't feel like taking my pills, I message my mentor," says one member. "Just knowing someone cares keeps me going."</p>
+  <p>Remember: missing doses can lead to drug resistance, which makes treatment harder. If you do miss a dose, take it as soon as you remember — unless it's almost time for your next dose. Never double up.</p>
+</div>
+
+<!-- ── FULL ARTICLE: POST 5 ── -->
+<div class="article-section" id="article-5">
+  <div class="article-meta">
+    <span>Community</span>
+    <span>March 5, 2026</span>
+    <span>7 min read</span>
+  </div>
+  <h2>World AIDS Day 2025: Osun State Youth Lead the Charge</h2>
+  <p>On December 1, 2025, APYIN Osun members took to the streets, schools, and community halls across the state to mark World AIDS Day with a series of events that put youth voices at the centre of the HIV response.</p>
+  <p>The theme for the year — "Take the Rights Path: My Health, My Right" — resonated deeply with our members, many of whom have experienced firsthand the barriers that young people face in accessing care, information, and dignity.</p>
+  <p><strong>Community Dialogues</strong></p>
+  <p>In Ile-Ife, Osogbo, and Ilesa, our members facilitated community dialogues that brought together young people, parents, traditional leaders, and healthcare workers. The conversations were honest, sometimes uncomfortable, and ultimately transformative.</p>
+  <p>"We talked about things people usually whisper about," says one facilitator. "Stigma, disclosure, relationships, mental health. For the first time, some community members really listened."</p>
+  <p><strong>Free Testing Drives</strong></p>
+  <p>Partnering with local health facilities, APYIN Osun organised free HIV testing drives at three universities and two markets. Over 800 people were tested, with positive cases immediately linked to care.</p>
+  <p><strong>Creative Advocacy</strong></p>
+  <p>Our members also used drama, spoken word, and music to spread awareness. A spoken word performance by three of our members at the Osogbo City Hall went viral on social media, reaching over 50,000 people.</p>
+  <blockquote>"We're not just asking for a seat at the table. We're building our own table, and inviting everyone to join us."</blockquote>
+  <p>The events were supported by ECEWS and the Osun State Ministry of Health, with coverage from local media outlets. Plans are already underway for an even bigger World AIDS Day 2026.</p>
+</div>
+
+<!-- ── FULL ARTICLE: POST 6 ── -->
+<div class="article-section" id="article-6">
+  <div class="article-meta">
+    <span>Voices</span>
+    <span>February 18, 2026</span>
+    <span>6 min read</span>
+  </div>
+  <h2>"I Am Not My Status": A Conversation with Three Young Women</h2>
+  <p>Three members of APYIN Osun's SRHR advocacy team — Folake, Amara, and Blessing — sat down with us to talk about identity, relationships, and what it means to live fully as a young woman with HIV in Nigeria.</p>
+  <p><strong>On self-acceptance</strong></p>
+  <p>"For the first two years after my diagnosis, I couldn't look in the mirror without feeling shame," says Folake, 24. "I thought HIV had taken everything from me — my beauty, my future, my right to love."</p>
+  <p>It was joining APYIN, she says, that helped her see herself differently. "Being around other young women who were thriving, who were in relationships, who had careers — it rewired something in my brain. I realised my status is just one part of me. It doesn't define me."</p>
+  <p><strong>On relationships</strong></p>
+  <p>Amara, 26, has been in a relationship for three years. Her partner is HIV-negative. "Disclosure was the hardest conversation I've ever had," she admits. "But I learned that the right person will see you, not your status."</p>
+  <p>The three women emphasise the importance of U=U (Undetectable = Untransmittable) in their relationships. "When my viral load is undetectable, I can't transmit HIV through sex," Amara explains. "That knowledge is power. It changed how I see myself and how I navigate intimacy."</p>
+  <p><strong>On advocacy</strong></p>
+  <p>Blessing, 23, is the youngest of the three and the most outspoken. "I talk about HIV everywhere now — in classrooms, on social media, at family gatherings. Some people think I'm too loud. But silence is what keeps stigma alive."</p>
+  <blockquote>"We are not victims. We are warriors, storytellers, daughters, sisters, friends. HIV is part of our story, but it is not the whole story."</blockquote>
+  <p>Their message to other young women? "You are worthy of love, of health, of happiness. Your status is not a sentence — it's a chapter. And you get to write the rest of the book."</p>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-mark">
+          <img src="apyin-logo-seal.png" alt="APYIN Seal" />
+        </div>
+        <div class="nav-logo-text">
+          <strong>APYIN</strong>
+          <span>Osun State Chapter</span>
+        </div>
+      </a>
+      <p>Association of Positive Youths Living with HIV/AIDS in Nigeria. Advocating for dignity, access, and a stigma-free future.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#about">About Us</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="index.html#get-involved">Get Involved</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Our Work</h4>
+      <ul>
+        <li><a href="#">Peer Mentorship</a></li>
+        <li><a href="#">SRHR Advocacy</a></li>
+        <li><a href="#">HIV Stigma Reduction</a></li>
+        <li><a href="#">Community Outreach</a></li>
+        <li><a href="#">PrEP Awareness</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Partners</h4>
+      <ul>
+        <li><a href="#">NEPWHAN</a></li>
+        <li><a href="#">ASWHAN</a></li>
+        <li><a href="#">GNP+</a></li>
+        <li><a href="#">ICW Global</a></li>
+        <li><a href="#">ECEWS</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 <span class="footer-red">APYIN Osun</span>. All rights reserved. Built with 🎗️ for our community.</span>
+    <div class="social-links">
+      <a href="#" class="social-link">𝕏</a>
+      <a href="#" class="social-link">f</a>
+      <a href="#" class="social-link">in</a>
+      <a href="#" class="social-link">📸</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Navbar scroll shadow
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Smooth scroll for article links
+  document.querySelectorAll('a[href^="#article"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
